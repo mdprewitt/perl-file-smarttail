@@ -59,7 +59,7 @@ DMJA, Inc <smarttail@dmja.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2003-2008 DMJA, Inc, File::SmartTail comes with 
+Copyright (C) 2003-2015 DMJA, Inc, File::SmartTail comes with 
 ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to 
 redistribute it and/or modify it under the same terms as Perl itself.
 See the "The Artistic License" L<LICENSE> for more details.
