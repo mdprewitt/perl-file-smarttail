@@ -28,6 +28,7 @@ Or:
         -host=>"lamachine",    
         -user=>"bozo",
         -rmtopts=>"-type UNIX -prefix appname",
+        -rmtenv=>"PERL5LIB=/lib/foo FOO=bar",
         -date=>"parsed", -yrfmt=>4, -monthdir=>"../..",
         -timeout=>999,
         -request_timeout=>999,
@@ -132,7 +133,11 @@ sub new {
     @args{ @_ } = ();
     my %h = @_;
     if ( exists $h{-tietype} ) {
-        $h{-tietype} && $h{-tietype} =~ /NDBM/ and $TIETYPE = 'NDBM_File';
+        if ($h{-tietype} =~ /NDBM/) {
+            $TIETYPE = 'NDBM_File';
+        } else {
+            $TIETYPE = $h{-tietype};
+        }
         delete @args{ '-tietype', $h{-tietype} };
     }
     if ( exists $h{-statuskey} ) {
@@ -512,6 +517,11 @@ Required for type "UNIX-REMOTE" unless file name is of the form host:filename (s
 
 Any flags that should be passed to the remote process. Since these become command-line args, they should have the form "-opt1 val1 -opt2 val2 ...". 
 
+=item -rmtenv=>"ENV1=val1 ENV1=val2"
+
+Any environment variables that should be set on the remote before runnign the
+remote process.
+
 =item -date=>'parsed' or 'gz'
     
 indicates special date-related file
@@ -617,6 +627,7 @@ sub OpenRemote {
     my $filename = $opts{-current};
     my $hostname = $opts{-host};
     my $prefix = $opts{-prefix};
+    my $rmtenv;
     my $ssh = $opts{-rmtsh} || $self->{file_data}->{$key}->{opts}->{-rmtsh} || "ssh";
     my ($conn_try, $port, $port_try, $ssh_try, $sock, $tmpfile);
 
@@ -631,6 +642,10 @@ sub OpenRemote {
 	return undef;
     }
 
+
+    if ($opts{-rmtenv}) {
+        $rmtenv = "/usr/bin/env $opts{-rmtenv}";
+    }
     #
     # Set the filestatus file prefix for the remote process
     # (if it isn't set already).
@@ -668,7 +683,7 @@ sub OpenRemote {
     my $fallback_ssh = 0;
     RSHELL: {
 	$tmpfile = new IO::File;
-	my $cmd = "$ssh $hostname -n $userflag $self->{BINDIR}rtail.pl -file $filename $rmtopts |";
+	my $cmd = "$ssh $hostname -n $userflag $rmtenv $self->{BINDIR}rtail.pl -file $filename $rmtopts < /dev/null |";
         LOG()->debug( qq( Preparing to open "$cmd") );
 	unless ($self->{file_data}->{$key}->{child} = $tmpfile->open($cmd)) {
 	    warn "Attempt $ssh_try to open of $ssh pipe for $key failed [$!]  , child status [$?]\n";
