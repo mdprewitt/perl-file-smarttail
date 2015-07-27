@@ -49,3 +49,4 @@ install
 \.dir$
 \.pag$
 \bdead-letter$
+^MYMETA\.json$
