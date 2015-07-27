@@ -7,17 +7,13 @@
 # Copyright (C) 2003-2008 DMJA, Inc, File::SmartTail comes with 
 # ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to 
 # redistribute it and/or modify it under the same terms as Perl itself.
-# See the "The Artistic License" L<perlartistic> for more details.
+# See the "The Artistic License" L<LICENSE> for more details.
 package File::SmartTail::DB;
 
 use strict;
 use warnings;
 
 use Fcntl qw(:DEFAULT :flock);
-
-my @TIETYPES = qw( DB_File NDBM_File ); 
-my %TIETYPES;
-@TIETYPES{ @TIETYPES } = ();
 
 use constant MAX_RETRIES => 6;
 
@@ -37,8 +33,6 @@ if ( ! -d "/var/tmp/filestatus" ) {
         my $statuskey = $h{statuskey} or
             LOG()->logdie( "required param: statuskey" );
         my $tietype = $h{tietype} || 'DB_File';
-        exists $TIETYPES{$tietype} or
-            LOG()->logdie( "unrecognized: tietype: $tietype. Must be one of @TIETYPES" );
         my $cachekey = join "\0", $statuskey, $tietype;
         $cache{$cachekey} and return $cache{$cachekey};
 
@@ -59,6 +53,8 @@ if ( ! -d "/var/tmp/filestatus" ) {
         }
 
         my %STATUS;
+        eval "use $tietype";
+        die "Unable to use $tietype [$@]" if $@;
         my $STATFILE = tie( %STATUS, $tietype, $filename,
                          O_RDWR | O_CREAT, 0600 ) ||
                              LOG()->logdie( "Tie of status for $statuskey failed [$!].\n" );
@@ -85,7 +81,11 @@ if ( ! -d "/var/tmp/filestatus" ) {
 sub sync {
     my $self = shift;
 
-    $self->{STATFILE}->sync if $self->{STATFILE} && $self->{TIETYPE} eq 'DB_File';
+    if ($self->{STATFILE} && $self->can('sync')) {
+        eval {
+            $self->{STATFILE}->sync
+        };
+    }
 }
 
 sub DESTROY {

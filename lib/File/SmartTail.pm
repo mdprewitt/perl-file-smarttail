@@ -45,7 +45,13 @@ See WatchFile for detailed description of options.
 
 =head1 DESCRIPTION
 
-The File::SmartTail module provides functionality modeled on the UNIX tail command, but enhanced with a variety of options, and the capability to "remember" how far it has processed a file, between invocations. rtail.pl is not normally used directly, but is invoked by a File::SmartTail object when monitoring a file on a remote host. When monitoring files on a remote machine, rtail.pl must be in the path of the owner of the process, on the remote machine. Normally it is installed in /usr/local/bin. 
+The File::SmartTail module provides functionality modeled on the UNIX tail
+command, but enhanced with a variety of options, and the capability to
+"remember" how far it has processed a file, between invocations. rtail.pl is
+not normally used directly, but is invoked by a File::SmartTail object when
+monitoring a file on a remote host. When monitoring files on a remote machine,
+rtail.pl must be in the path of the owner of the process, on the remote machine.
+Normally it is installed in /usr/local/bin. 
 
 =head1 AUTHOR
 
@@ -56,7 +62,7 @@ DMJA, Inc <smarttail@dmja.com>
 Copyright (C) 2003-2008 DMJA, Inc, File::SmartTail comes with 
 ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to 
 redistribute it and/or modify it under the same terms as Perl itself.
-See the "The Artistic License" L<perlartistic> for more details.
+See the "The Artistic License" L<LICENSE> for more details.
 
 =cut
 
@@ -64,8 +70,6 @@ package File::SmartTail;
 
 use strict;
 use vars qw( $VERSION );
-use DB_File;
-use NDBM_File;
 use Fcntl;
 use File::Basename;
 use IO::Seekable;
@@ -106,10 +110,8 @@ or
 
     $tail = new File::SmartTail(-tietype=>$type, -statuskey=>$programname, -bindir=>$rtail_script_location, $filename1, $filename2, ...)
 
-Supported tietypes:
-
-    NDBM_File
-    DB_File
+B<i-tietype> can be any class that can be tied to a hash like NDBM_File DB_File
+SDBM_File.
 
 Default statuskey is name of invoking program.
 

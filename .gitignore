@@ -1,3 +1,5 @@
+lib/Tail.pm
+lib/File/SmartTail/Logger.pm
 /blib/
 /.build/
 _build/

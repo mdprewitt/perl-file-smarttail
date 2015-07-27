@@ -11,7 +11,7 @@ package File::SmartTail::Logger;
 # Copyright (C) 2003-2008 DMJA, Inc, File::SmartTail comes with 
 # ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to 
 # redistribute it and/or modify it under the same terms as Perl itself.
-# See the "The Artistic License" L<perlartistic> for more details.
+# See the "The Artistic License" L<LICENSE> for more details.
 #
 
 
