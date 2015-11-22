@@ -1,4 +1,5 @@
 # only installed locally for backwards compatibility
+.git
 lib/Tail.pm
 lib/File/SmartTail/Logger.pm
 rtail.switch
